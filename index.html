@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/reveal.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/monokai.min.css">
+
+		<!-- Printing and PDF "slides/exports -->
+		<!-- <script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script> -->
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<section>
+						<h1>State management (Redux)</h1>
+						<aside class="notes">
+						Hello everyone, my name is Sofroniy today I will tell you about Redux but rather about state management 
+						library Redux and how does it manage the state of our application.
+						<br>
+						---
+						<br>
+						We will talk a bit about React and it’s collaboration with Redux.
+						<br>
+						---
+						<br>
+						Let's analyze 3 main concepts of Redux . Here they are
+						<br>
+						---
+						<br>
+						Store - which coordinates our updates.
+						<br>
+						---
+						<br>
+						Reducer function - which updates the global state in response to Actions.
+						<br>
+						---
+						<br>
+						Actions - functions that catch our changes and send the object of changes to our Store.
+						</aside>
+					</section>
+					<section>
+						<img data-src="slides/export.png">	
+						<aside class="notes">
+							There is an approach in which the state is stored in one main component and all other components 
+							transmit and update their state throughout the chain, the advantage of this approach is 
+							that the whole state is controlled by one component and disadvantage that 
+							passing the state affects all the entire chain of components. 
+							This very problem is called "Property Drill"
+							<br>
+							---
+							<br>
+							But in the example, we will consider a model when each of the components stores 
+							its own state, this is not the best idea, since while expanding our application 
+							it becomes more and more difficult to maintain such code.
+						</aside>
+					</section>								
+				</section>
+				<section>
+					<section data-transition="none">
+						<img data-src="slides/export1.png">						
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export2.png">
+						<aside class="notes">						
+							Each component in a react application should store a state.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export3.png">
+						<aside class="notes">						
+							In addition, each react component should have some logic by which the state is updated.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export4.png">
+						<aside class="notes">						
+							And of course, components can do the rendering (displaying some UI elements)
+							<br>
+							---
+							<br>
+							Now let's imagine that we are working with a large and non-disturbing application 
+							in which some components are connected. 
+							<br>
+							<br>
+							On the one hand, we do not want to store in each component its own piece of state. 
+							<br>
+							<br>
+							But, on the other hand, we don’t want to get to the "property drill" problem and pass our property through many, many layers of the 
+							application 
+							<br>
+							---
+							<br>
+							What if abandon this local state storages in each component for our application
+							and instead of that agree that all application data will be stored centrally 
+							in one large ‘store’ and the state will be available for each component like this.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export5.png">
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export6.png">
+						<aside class="notes">						
+							Then we could remove all the local states storages and work with one big (common) state
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export7.png">
+						<aside class="notes">						
+							Well, as you might see on the diagram, our components became lighter because we took away 
+							part of the responsibilities for storing states from them.
+							<br>
+							<br>
+							It won’t be hard to imagine how it would be possible to implement such an architecture using, 
+							for example, the context in the react. 
+							<br>
+							<br>
+							Seems, like problem is solved… But is it really so?
+							<br>
+							---
+							<br>
+							The main reason why this will never work - is a complete loss of control over state changes:
+							<br>
+							<br>
+							each component can now read or write to the global object whatever it ‘wants’.
+							<br>
+							<br>
+							Supporting such code over time would become absolutely impossible.
+							<br>
+							---
+							<br>
+							That doesn’t mean we should throw the idea away, but let’s try to come up with some ‘working’ solution:
+							<br>
+							<br>
+							how we can make updating the global state a bit more controlled?
+							<br>
+							<br>
+							What if we fix the problem by preventing the components from updating the global storage
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export8.png">
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export9.png">
+						<aside class="notes">
+							Our components can read from the global state, but it will be strictly forbidden to write in it or make any changes. 
+							<br>
+							<br>
+							sounds better.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export10.png">
+						<aside class="notes">
+							But we still need to update the state.  
+							<br>
+							<br>
+							If not the components will update our state then ‘who’? 
+							<br>
+							<br>
+							How the business logic is going to be realised (implemented)? 
+							<br>
+							<br>
+							Let's say that in our application we will go a step forward and after renovation of entire state from all the components to global state,
+							we will do the same with the logic and create some kind of large global repository of logic. 
+							<br>
+							<br>
+							Let's draw a square in our diagram and say that it knows how to update the state for absolutely any event in the application.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export11.png">
+						<aside class="notes">
+							Since this square implements logic, it is actually just a function. 
+							<br>
+							<br>
+							This function knows what to do and how to update our global state. 
+							<br>
+							<br>
+							The user clicked on the ‘delete item’ from the to-do list, our function knows that you need to remove the item from the state array and count
+							how many things are left in the list and how many of them are in ‘done’ status and so on.
+							<br>
+							---
+							<br>
+							Lets call the function reducer, this is an extremely unfortunate name, but it just so. 
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export12.png">
+						<aside class="notes">
+							Well, now let's remove the little squares with logic from our components. 
+							<br>
+							<br>
+							Because all our logic has been moved to reducer function
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export13.png">
+						<aside class="notes">
+							Perhaps let's show in the diagram that reducer updates the state.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export14.png">
+						<aside class="notes">
+							And, the last question remains: how now to connect our components with the reducer function.
+							<br>
+							<br>
+							Yes, just like before, we organiz the interaction between components at different levels, with the help of events.
+							<br>
+							---
+							<br>
+							We will say that components cannot directly change the state, but components can create events that we will pass to this reducer function.
+							<br>
+							<br>
+							The function will know how to update the state for absolutely any event in our application.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export15.png">
+						<aside class="notes">
+							In fact, we have just taken apart the architecture of redux and to make this picture a little more correct in the redux terminology.
+							<br>
+							<br>
+							The events are called Actions.								
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export16.png">
+						<aside class="notes">
+							And there is another component that organizes the operation of the reducer function and controls the state update: it called store.
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export17.png">
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export18.png">
+						<aside class="notes">
+							To make this scheme even clearer, imagine that you took a regular react application 
+							and combine all the local states of the components into one large state. then you took all the logic that change the state, put it into a separate function that called reducer. 
+							<br>
+							<br>
+							Well, in order to update the state, for example, in response to the fact that the user clicks on some button.
+							<br>
+							---
+							<br>							
+							The react component can create a special event which in terms of editors is called Action. 
+							<br>
+							<br>
+							This action is essentially an ordinary JS object that describes what needs to be done, but reducer knows how to do it. 
+							<br>
+							<br>
+							Reducer updates the state and the state makes the react component render the new state on the UI
+						</aside>
+					</section>
+					<section data-transition="none">
+						<img data-src="slides/export19.png">
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.8.0/js/reveal.min.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/markdown/marked.js' },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.6.0/plugin/highlight/highlight.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
